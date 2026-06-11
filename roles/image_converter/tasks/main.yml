@@ -1,0 +1,10 @@
+---
+- include_tasks: install_core.yml
+- include_tasks: install_vtracer.yml
+- include_tasks: install_svg_icon.yml
+- include_tasks: install_inkscape_extra.yml
+- include_tasks: install_oxipng.yml
+- include_tasks: install_svgo.yml
+- include_tasks: install_qrcode.yml
+- include_tasks: install_pixeltopath.yml
+  when: enable_pixeltopath | bool

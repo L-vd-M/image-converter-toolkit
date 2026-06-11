@@ -1,0 +1,7 @@
+---
+- name: Install image converter toolkit
+  hosts: localhost
+  connection: local
+  become: true
+  roles:
+    - image_converter
