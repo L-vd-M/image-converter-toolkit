@@ -1,0 +1,19 @@
+---
+- name: Install core image conversion packages
+  block:
+    - name: Install apt packages
+      apt:
+        name:
+          - imagemagick
+          - librsvg2-bin
+          - potrace
+          - libcairo2
+          - python3-pip
+        state: present
+        update_cache: true
+  rescue:
+    - name: Log apt install failure
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — apt install failed: {{ ansible_failed_result.msg }}"
+        create: true

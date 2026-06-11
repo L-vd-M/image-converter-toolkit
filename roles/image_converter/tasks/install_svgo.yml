@@ -1,0 +1,25 @@
+---
+- name: Install svgo via npm
+  block:
+    - name: Install svgo globally
+      npm:
+        name: svgo
+        global: true
+        state: present
+
+    - name: Verify svgo
+      command: svgo --version
+      register: svgo_ver
+      changed_when: false
+
+    - name: Log svgo install
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — svgo installed: {{ svgo_ver.stdout }}"
+        create: true
+  rescue:
+    - name: Log svgo failure
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — svgo install failed: {{ ansible_failed_result.msg }}"
+        create: true

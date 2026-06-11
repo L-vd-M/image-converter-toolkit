@@ -1,0 +1,35 @@
+---
+- name: Install QR code generation tools
+  block:
+    - name: Install qrencode via apt
+      apt:
+        name: qrencode
+        state: present
+
+    - name: Install segno via pip
+      pip:
+        name: segno
+        state: present
+        executable: pip3
+
+    - name: Verify qrencode
+      command: qrencode --version
+      register: qrencode_ver
+      changed_when: false
+
+    - name: Verify segno CLI
+      command: segno --version
+      register: segno_ver
+      changed_when: false
+
+    - name: Log QR tools install
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — QR tools: qrencode {{ qrencode_ver.stdout | trim }}, segno {{ segno_ver.stdout | trim }}"
+        create: true
+  rescue:
+    - name: Log QR tools failure
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — QR tools install failed: {{ ansible_failed_result.msg }}"
+        create: true

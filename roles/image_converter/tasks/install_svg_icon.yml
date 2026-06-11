@@ -1,0 +1,26 @@
+---
+- name: Install svg-icon-gen via pip
+  block:
+    - name: Install svg-icon-gen
+      pip:
+        name: svg-icon-gen
+        state: present
+        executable: pip3
+
+    - name: Verify svg-icon-gen
+      command: svg-icon-gen --version
+      register: svgicon_ver
+      changed_when: false
+      failed_when: svgicon_ver.rc != 0
+
+    - name: Log svg-icon-gen install
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — svg-icon-gen installed: {{ svgicon_ver.stdout }}"
+        create: true
+  rescue:
+    - name: Log svg-icon-gen failure
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — svg-icon-gen install failed: {{ ansible_failed_result.msg }}"
+        create: true

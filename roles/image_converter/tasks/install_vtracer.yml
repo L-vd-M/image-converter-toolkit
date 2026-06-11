@@ -1,0 +1,38 @@
+---
+- name: Install VTracer binary
+  block:
+    - name: Download VTracer musl binary
+      get_url:
+        url: "{{ vtracer_binary_url }}"
+        dest: /tmp/vtracer.tar.gz
+        mode: '0644'
+
+    - name: Extract VTracer binary
+      unarchive:
+        src: /tmp/vtracer.tar.gz
+        dest: /tmp/
+        remote_src: true
+
+    - name: Install VTracer to /usr/local/bin
+      copy:
+        src: /tmp/vtracer
+        dest: /usr/local/bin/vtracer
+        mode: '0755'
+        remote_src: true
+
+    - name: Verify VTracer installation
+      command: vtracer --version
+      register: vtracer_version_out
+      changed_when: false
+
+    - name: Log VTracer install
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — VTracer installed: {{ vtracer_version_out.stdout }}"
+        create: true
+  rescue:
+    - name: Log VTracer install failure
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — VTracer install failed: {{ ansible_failed_result.msg }}"
+        create: true

@@ -1,0 +1,34 @@
+---
+- name: Install PixelToPath GUI (optional)
+  block:
+    - name: Download PixelToPath Linux tar
+      get_url:
+        url: "{{ pixeltopath_url }}"
+        dest: /tmp/PixelToPath.tar
+        mode: '0644'
+
+    - name: Create extract directory
+      file:
+        path: /tmp/pixeltopath_extract
+        state: directory
+        mode: '0755'
+
+    - name: Extract PixelToPath
+      unarchive:
+        src: /tmp/PixelToPath.tar
+        dest: /tmp/pixeltopath_extract/
+        remote_src: true
+        creates: /tmp/pixeltopath_extract/PixelToPath
+
+    - name: Install PixelToPath to /usr/local/bin
+      copy:
+        src: /tmp/pixeltopath_extract/PixelToPath
+        dest: /usr/local/bin/PixelToPath
+        mode: '0755'
+        remote_src: true
+  rescue:
+    - name: Log PixelToPath failure
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — PixelToPath install failed: {{ ansible_failed_result.msg }}"
+        create: true

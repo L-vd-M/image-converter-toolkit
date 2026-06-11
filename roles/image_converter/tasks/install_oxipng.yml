@@ -1,0 +1,47 @@
+---
+- name: Install oxipng binary
+  block:
+    - name: Download oxipng musl binary
+      get_url:
+        url: "{{ oxipng_binary_url }}"
+        dest: /tmp/oxipng.tar.gz
+        mode: '0644'
+
+    - name: Extract oxipng
+      unarchive:
+        src: /tmp/oxipng.tar.gz
+        dest: /tmp/
+        remote_src: true
+
+    - name: Find extracted oxipng binary
+      find:
+        paths: /tmp
+        patterns: "oxipng"
+        recurse: true
+        file_type: file
+      register: oxipng_find
+
+    - name: Install oxipng to /usr/local/bin
+      copy:
+        src: "{{ oxipng_find.files[0].path }}"
+        dest: /usr/local/bin/oxipng
+        mode: '0755'
+        remote_src: true
+      when: oxipng_find.files | length > 0
+
+    - name: Verify oxipng
+      command: oxipng --version
+      register: oxipng_ver
+      changed_when: false
+
+    - name: Log oxipng install
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — oxipng installed: {{ oxipng_ver.stdout }}"
+        create: true
+  rescue:
+    - name: Log oxipng failure
+      lineinfile:
+        path: /var/log/image-converter-install.log
+        line: "{{ ansible_date_time.iso8601 }} — oxipng install failed: {{ ansible_failed_result.msg }}"
+        create: true
