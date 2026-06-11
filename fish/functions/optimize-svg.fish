@@ -10,8 +10,6 @@ function optimize-svg --description "Optimize SVG with SVGO (strip metadata, cle
         set output $argv[2]
     end
 
-    svgo "$input" -o "$output" \
-        --plugin="preset-default" \
-        --plugin="{name: 'removeViewBox', active: false}"
+    svgo "$input" -o "$output"
     echo "Optimized: $output"
 end

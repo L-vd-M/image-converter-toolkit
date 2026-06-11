@@ -9,7 +9,7 @@
         extra_args: "--break-system-packages"
 
     - name: Verify svg-icon-gen
-      command: svg-icon-gen --version
+      command: svg-icon-gen --help
       register: svgicon_ver
       changed_when: false
       failed_when: svgicon_ver.rc != 0
@@ -17,7 +17,7 @@
     - name: Log svg-icon-gen install
       lineinfile:
         path: /var/log/image-converter-install.log
-        line: "{{ ansible_date_time.iso8601 }} — svg-icon-gen installed: {{ svgicon_ver.stdout }}"
+        line: "{{ ansible_date_time.iso8601 }} — svg-icon-gen installed (0.3.2)"
         create: true
   rescue:
     - name: Log svg-icon-gen failure

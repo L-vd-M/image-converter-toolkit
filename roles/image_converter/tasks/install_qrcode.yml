@@ -19,7 +19,7 @@
       changed_when: false
 
     - name: Verify segno CLI
-      command: segno --version
+      command: segno --ver
       register: segno_ver
       changed_when: false
 
