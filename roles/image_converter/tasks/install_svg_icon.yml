@@ -6,6 +6,7 @@
         name: svg-icon-gen
         state: present
         executable: pip3
+        extra_args: "--break-system-packages"
 
     - name: Verify svg-icon-gen
       command: svg-icon-gen --version
